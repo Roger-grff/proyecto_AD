@@ -1,0 +1,96 @@
+version: '3'
+
+services:
+
+  # ── Base de datos principal (Maestro) ──────────────────────
+  mysql_principal:
+    container_name: Maestro1
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    command: >
+      --server-id=1
+      --log-bin=mysql-bin
+      --binlog-do-db=tareas_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tareas_db
+    volumes:
+      - master_datos:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # ── Base de datos secundaria (Esclavo) ────────────────────
+  mysql_secundario:
+    container_name: Esclavo0
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    command: >
+      --server-id=2
+      --log-bin=mysql-bin
+      --binlog-do-db=tareas_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tareas_db
+    volumes:
+      - slave_datos:/var/lib/mysql
+
+  # ── phpMyAdmin (gestión visual de BD) ─────────────────────
+  phpmyadmin:
+    container_name: phpmyadmin1
+    image: phpmyadmin:latest
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOSTS: "mysql_principal,mysql_secundario"
+      PMA_ARBITRARY: 1
+
+  # ── Servidor Web 1 ─────────────────────────────────────────
+  servidor1:
+    build:
+      context: ./servidor1
+      dockerfile: Dockerfile
+    container_name: ServidorWeb0001
+    ports:
+      - "5001:5000"
+    depends_on:
+      - mysql_principal
+
+  # ── Servidor Web 2 ─────────────────────────────────────────
+  servidor2:
+    build:
+      context: ./servidor2
+      dockerfile: Dockerfile
+    container_name: ServidorWeb0002
+    ports:
+      - "5002:5000"
+    depends_on:
+      - mysql_principal
+
+  # ── Servidor Web 3 ─────────────────────────────────────────
+  servidor3:
+    build:
+      context: ./servidor3
+      dockerfile: Dockerfile
+    container_name: ServidorWeb0003
+    ports:
+      - "5003:5000"
+    depends_on:
+      - mysql_principal
+
+  # ── Balanceador de carga NGINX ─────────────────────────────
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx0001
+    ports:
+      - "8080:80"
+    depends_on:
+      - servidor1
+      - servidor2
+      - servidor3
+
+volumes:
+  master_datos:
+  slave_datos:

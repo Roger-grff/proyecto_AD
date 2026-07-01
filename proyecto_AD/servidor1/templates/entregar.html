@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{% if entrega %}Ver entrega{% else %}Entregar{% endif %} · EPN{% endblock %}
+
+{% block css %}
+<style>
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 2rem; margin-bottom: 1.2rem; }
+  .meta .lbl { font-size: .7rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .18rem; }
+  .meta .val { font-size: .9rem; font-weight: 600; }
+
+  .desc-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--blue); border-radius: 8px; padding: .9rem 1rem; font-size: .86rem; color: #64748b; line-height: 1.65; margin-bottom: 1.3rem; }
+
+  .banner { display: flex; align-items: center; gap: .6rem; padding: .8rem 1rem; border-radius: 8px; font-size: .86rem; font-weight: 600; margin-bottom: 1.2rem; }
+  .banner.ok   { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+  .banner.soon { background: #fffbeb; color: var(--amber); border: 1px solid #fde68a; }
+  .banner.past { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+
+  .resp-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--green); border-radius: 8px; padding: .9rem 1rem; font-size: .88rem; color: #166534; white-space: pre-wrap; line-height: 1.6; margin-bottom: .5rem; }
+  .fecha-env { font-size: .73rem; color: var(--gray); }
+
+  .acciones { display: flex; gap: .7rem; margin-top: .3rem; }
+  .sec-label { font-size: .7rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .4rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="ph">
+  <h1>{% if entrega %}📄 Detalle de entrega{% else %}✏️ Entregar tarea{% endif %}</h1>
+  <a href="{{ url_for('tareas') }}" class="btn btn-ghost">&larr; Volver</a>
+</div>
+
+<div class="card">
+  {# Metadatos #}
+  <div class="meta">
+    <div><div class="lbl">Código</div><div class="val" style="font-family:monospace;color:#64748b">{{ tarea.codigo }}</div></div>
+    <div><div class="lbl">Título</div><div class="val">{{ tarea.titulo }}</div></div>
+  </div>
+
+  <div class="sec-label">Descripción</div>
+  <div class="desc-box">{{ tarea.descripcion }}</div>
+
+  {# Banner fecha #}
+  {% set vencida = ahora > tarea.fecha_limite %}
+  {% set segs    = (tarea.fecha_limite - ahora).total_seconds() %}
+  <div class="banner {% if vencida %}past{% elif segs<3600 %}soon{% else %}ok{% endif %}">
+    {% if vencida %}
+      ⛔ Venció el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
+    {% elif segs < 3600 %}
+      ⚡ ¡Menos de 1 hora! · Cierra el {{ tarea.fecha_limite.strftime('%H:%M') }}
+    {% else %}
+      ✅ Abierta hasta el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
+    {% endif %}
+  </div>
+
+  {% if entrega %}
+    <div class="sec-label">Tu respuesta</div>
+    <div class="resp-box">{{ entrega.respuesta }}</div>
+    <div class="fecha-env">Enviada el {{ entrega.fecha_entrega.strftime('%d/%m/%Y a las %H:%M:%S') }}</div>
+
+  {% elif vencida %}
+    <p style="text-align:center;color:var(--gray);padding:.8rem 0;font-size:.88rem">Esta tarea venció sin entrega.</p>
+
+  {% else %}
+    <form method="POST">
+      <div class="campo">
+        <label>Tu respuesta</label>
+        <textarea name="respuesta" class="input" placeholder="Escribe aquí tu respuesta..." required></textarea>
+      </div>
+      <div class="acciones">
+        <button type="submit" class="btn btn-success">Enviar entrega ✓</button>
+        <a href="{{ url_for('tareas') }}" class="btn btn-ghost">Cancelar</a>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

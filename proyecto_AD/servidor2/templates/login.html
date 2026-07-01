@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión · EPN{% endblock %}
+
+{% block css %}
+<style>
+  .wrap { display: flex; justify-content: center; padding-top: 5rem; }
+  .login-box { background: #fff; border-radius: 14px; box-shadow: 0 4px 36px rgba(0,0,0,.12); padding: 2.5rem 2.2rem; width: 100%; max-width: 400px; }
+  .login-top { text-align: center; margin-bottom: 1.8rem; }
+  .login-top .icono { font-size: 2.8rem; display: block; margin-bottom: .5rem; }
+  .login-top h1 { font-size: 1.3rem; color: var(--navy); margin-bottom: .2rem; }
+  .login-top p { color: var(--gray); font-size: .8rem; }
+  .btn-block { width: 100%; justify-content: center; padding: .65rem; font-size: .92rem; margin-top: .2rem; }
+  .hint { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; padding: .7rem .9rem; margin-top: 1.3rem; font-size: .76rem; color: #475569; }
+  .hint strong { display: block; margin-bottom: .25rem; color: var(--dark); }
+  .hint code { background: #e2e8f0; padding: 1px 5px; border-radius: 3px; font-size: .85em; }
+  .login-nodo { text-align: center; margin-top: 1rem; color: var(--gray); font-size: .7rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="login-box">
+  <div class="login-top">
+    <span class="icono">🎓</span>
+    <h1>Iniciar sesión</h1>
+    <p>Sistema de entrega de tareas</p>
+  </div>
+
+  <form method="POST">
+    <div class="campo">
+      <label>Cédula de identidad</label>
+      <input type="text" name="cedula" class="input" placeholder="Ej: 1700000001" autofocus required>
+    </div>
+    <div class="campo">
+      <label>Contraseña</label>
+      <input type="password" name="password" class="input" placeholder="Tu contraseña" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Ingresar &rarr;</button>
+  </form>
+
+  <div class="hint">
+    <strong>Credenciales de prueba</strong>
+    Cédula: <code>1700000001</code> &nbsp; Contraseña: <code>pass123</code>
+  </div>
+  <div class="login-nodo">Nodo activo: <strong>{{ nodo }}</strong></div>
+</div>
+{% endblock %}

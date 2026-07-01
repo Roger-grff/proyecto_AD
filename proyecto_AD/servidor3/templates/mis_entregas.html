@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Mis entregas · EPN{% endblock %}
+
+{% block css %}
+<style>
+  .entrega {
+    background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    padding: 1.2rem 1.4rem; margin-bottom: .9rem;
+    border-left: 5px solid var(--green);
+  }
+  .ent-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: .65rem; }
+  .ent-cod   { font-size: .68rem; font-family: monospace; color: var(--gray); font-weight: 700; margin-bottom: .12rem; }
+  .ent-titulo { font-size: .98rem; font-weight: 700; color: var(--navy); }
+  .ent-fecha  { font-size: .73rem; color: var(--gray); white-space: nowrap; }
+  .ent-resp { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; padding: .7rem .9rem; font-size: .84rem; color: #475569; white-space: pre-wrap; max-height: 110px; overflow-y: auto; line-height: 1.55; }
+
+  .vacio { text-align:center; padding:4rem 0; color:var(--gray); }
+  .vacio .ico { font-size:2.8rem; display:block; margin-bottom:.6rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="ph">
+  <h1>Mis entregas</h1>
+  <a href="{{ url_for('tareas') }}" class="btn btn-ghost">&larr; Volver</a>
+</div>
+
+{% if not entregas %}
+  <div class="card vacio">
+    <span class="ico">📭</span>
+    <p>Todavía no has realizado ninguna entrega.</p><br>
+    <a href="{{ url_for('tareas') }}" class="btn btn-primary">Ver tareas</a>
+  </div>
+{% else %}
+  {% for e in entregas %}
+  <div class="entrega">
+    <div class="ent-header">
+      <div>
+        <div class="ent-cod">{{ e.codigo }}</div>
+        <div class="ent-titulo">{{ e.titulo }}</div>
+      </div>
+      <div class="ent-fecha">✓ {{ e.fecha_entrega.strftime('%d/%m/%Y · %H:%M') }}</div>
+    </div>
+    <div class="ent-resp">{{ e.respuesta }}</div>
+  </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

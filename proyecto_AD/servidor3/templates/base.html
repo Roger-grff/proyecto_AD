@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}EPN Tareas{% endblock %}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #1b3a6b;
+      --blue:  #2563eb;
+      --green: #16a34a;
+      --red:   #dc2626;
+      --amber: #d97706;
+      --bg:    #f1f5f9;
+      --white: #ffffff;
+      --gray:  #94a3b8;
+      --dark:  #1e293b;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
+
+    /* Navbar */
+    nav {
+      background: var(--navy); height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.8rem; position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .nav-brand { color: #fff; font-weight: 700; font-size: .98rem; display: flex; align-items: center; gap: .5rem; }
+    .nodo-tag {
+      background: rgba(255,255,255,.18); color: #c7d7f0;
+      font-size: .65rem; font-weight: 700; letter-spacing: .06em;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .nav-links { display: flex; align-items: center; gap: .1rem; }
+    .nav-links a { color: #c7d7f0; text-decoration: none; font-size: .83rem; padding: .35rem .85rem; border-radius: 6px; }
+    .nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .nav-user { color: rgba(255,255,255,.55); font-size: .8rem; margin-right: .6rem; }
+
+    /* Contenedor principal */
+    .wrap { max-width: 920px; margin: 2rem auto; padding: 0 1.2rem; }
+
+    /* Card */
+    .card { background: var(--white); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 14px rgba(0,0,0,.05); padding: 1.5rem; margin-bottom: 1.2rem; }
+
+    /* Alertas */
+    .alerta { display: flex; align-items: flex-start; gap: .6rem; padding: .8rem 1rem; border-radius: 8px; font-size: .87rem; margin-bottom: .9rem; }
+    .alerta-success { background: #dcfce7; color: #166534; border-left: 4px solid var(--green); }
+    .alerta-danger  { background: #fee2e2; color: #991b1b; border-left: 4px solid var(--red); }
+    .alerta-warning { background: #fef3c7; color: #92400e; border-left: 4px solid var(--amber); }
+
+    /* Botones */
+    .btn { display: inline-flex; align-items: center; gap: .35rem; padding: .48rem 1.05rem; border-radius: 7px; font-size: .86rem; font-weight: 600; font-family: inherit; border: none; cursor: pointer; text-decoration: none; transition: filter .15s; }
+    .btn:hover { filter: brightness(1.1); }
+    .btn-primary  { background: var(--blue);  color: #fff; }
+    .btn-success  { background: var(--green); color: #fff; }
+    .btn-ghost    { background: #e2e8f0; color: #475569; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-red   { background: #fee2e2; color: #991b1b; }
+    .badge-gray  { background: #e2e8f0; color: #475569; }
+
+    /* Formulario */
+    .campo { margin-bottom: 1rem; }
+    .campo label { display: block; font-size: .8rem; font-weight: 600; color: #475569; margin-bottom: .3rem; }
+    .input {
+      width: 100%; padding: .58rem .82rem;
+      border: 1.5px solid #e2e8f0; border-radius: 7px;
+      font-size: .9rem; font-family: inherit; background: #f8fafc;
+    }
+    .input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    textarea.input { resize: vertical; min-height: 120px; }
+
+    /* Encabezado de página */
+    .ph { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.3rem; }
+    .ph h1 { font-size: 1.4rem; color: var(--navy); }
+
+    footer { text-align: center; padding: 2rem 0 1.2rem; color: var(--gray); font-size: .73rem; }
+  </style>
+  {% block css %}{% endblock %}
+</head>
+<body>
+
+{% if session.estudiante_id %}
+<nav>
+  <div class="nav-brand">
+    📚 EPN · Sistema de Tareas
+    <span class="nodo-tag">{{ nodo }}</span>
+  </div>
+  <div class="nav-links">
+    <span class="nav-user">👤 {{ session.estudiante_nombre }}</span>
+    <a href="{{ url_for('tareas') }}">Tareas</a>
+    <a href="{{ url_for('mis_entregas') }}">Mis entregas</a>
+    <a href="{{ url_for('logout') }}">Salir</a>
+  </div>
+</nav>
+{% endif %}
+
+<div class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+      <div class="alerta alerta-{{ cat }}">
+        {% if cat=='success' %}✅{% elif cat=='danger' %}❌{% else %}⚠️{% endif %}
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+</div>
+
+<footer>Escuela Politécnica Nacional &nbsp;·&nbsp; Aplicaciones Distribuidas 2026-A</footer>
+</body>
+</html>
