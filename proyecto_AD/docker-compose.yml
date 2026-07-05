@@ -12,6 +12,8 @@ services:
       --server-id=1
       --log-bin=mysql-bin
       --binlog-do-db=tareas_db
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: tareas_db
@@ -29,11 +31,15 @@ services:
       --server-id=2
       --log-bin=mysql-bin
       --binlog-do-db=tareas_db
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --read-only=1
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: tareas_db
     volumes:
       - slave_datos:/var/lib/mysql
+      - ./db/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
 
   # ── phpMyAdmin (gestión visual de BD) ─────────────────────
   phpmyadmin:

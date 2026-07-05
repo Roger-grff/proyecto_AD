@@ -63,3 +63,8 @@ INSERT IGNORE INTO tareas (codigo, titulo, descripcion, fecha_limite) VALUES
  'Tarea vencida (solo para probar validación)',
  'Esta tarea tiene fecha pasada para verificar que el sistema no permite entregas fuera de plazo.',
  DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+-- Usuario de replicación
+CREATE USER IF NOT EXISTS 'repl'@'%' IDENTIFIED WITH mysql_native_password BY 'repl_pass123';
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+FLUSH PRIVILEGES;
