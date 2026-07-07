@@ -1,4 +1,3 @@
-#!/bin/bash
 set -e
 
 echo "Esperando a que el maestro esté disponible..."
