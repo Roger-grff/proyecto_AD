@@ -20,21 +20,24 @@
 {% block body %}
 <div class="login-box">
   <div class="login-top">
-<span class="seal lg" style="margin:0 auto .9rem;font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem">E</span>
+<span class="seal xl"
+      style="margin:0 auto .9rem;font-family:'Fraunces',serif;font-weight:600;">
+    EPN
+</span>
     <h1>Iniciar sesión</h1>
     <p>Sistema de entrega de tareas</p>
   </div>
 
   <form method="POST">
     <div class="campo">
-      <label>Cédula de identidad</label>
+      <label>Cédula</label>
       <input type="text" name="cedula" class="input" placeholder="Ej: 1700000001" autofocus required>
     </div>
     <div class="campo">
       <label>Contraseña</label>
-      <input type="password" name="password" class="input" placeholder="Tu contraseña" required>
+      <input type="password" name="password" class="input" placeholder="********" required>
     </div>
-    <button type="submit" class="btn btn-primary btn-block">Ingresar &rarr;</button>
+    <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
   </form>
 
   <div class="hint">
