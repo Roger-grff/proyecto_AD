@@ -11,7 +11,10 @@ def get_db():
         host="mysql_principal",
         user="root",
         password="root",
-        database="tareas_db"
+        database="tareas_db",
+        charset="utf8mb4",
+        collation="utf8mb4_unicode_ci",
+        use_unicode=True
     )
 
 # ── CRUD: Estudiantes ─────────────────────────────────────────

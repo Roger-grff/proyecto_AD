@@ -3,50 +3,66 @@
 
 {% block css %}
 <style>
-  /* Resumen */
-  .resumen { display: grid; grid-template-columns: repeat(3,1fr); gap: .9rem; margin-bottom: 1.5rem; }
-  .res-card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.07); padding: 1rem 1.2rem; display: flex; align-items: center; gap: .8rem; }
-  .res-card .icon { font-size: 1.6rem; }
-  .res-card .lbl { font-size: .68rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .05em; }
-  .res-card .val { font-size: 1.45rem; font-weight: 700; color: var(--navy); }
-
-  /* Filas de tarea */
-  .tarea-fila {
-    background: #fff; border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.07); padding: 1.1rem 1.3rem;
-    margin-bottom: .8rem; display: flex; align-items: center; gap: 1.1rem;
-    border-left: 5px solid #e2e8f0;
+  .resumen { display: grid; grid-template-columns: repeat(3,1fr); gap: .9rem; margin-bottom: 1.6rem; }
+  .res-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1rem 1.2rem; display: flex; align-items: center; gap: .9rem;
   }
-  .tarea-fila.pendiente  { border-left-color: var(--blue); }
-  .tarea-fila.entregada  { border-left-color: var(--green); }
-  .tarea-fila.vencida    { border-left-color: var(--red); opacity: .8; }
+  .res-card .lbl { font-size: .68rem; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: .06em; }
+  .res-card .val { font-size: 1.5rem; font-weight: 600; font-family: 'Fraunces', serif; color: var(--ink); }
+
+  .tarea-fila {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.1rem 1.3rem; margin-bottom: .8rem;
+    display: flex; align-items: center; gap: 1.1rem;
+    border-left: 3px solid var(--line);
+  }
+  .tarea-fila.pendiente  { border-left-color: var(--ink); }
+  .tarea-fila.entregada  { border-left-color: var(--forest); }
+  .tarea-fila.vencida    { border-left-color: var(--rust); opacity: .9; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tarea-fila { animation: riseIn .35s ease backwards; }
+    .tarea-fila:nth-child(1){animation-delay:.02s} .tarea-fila:nth-child(2){animation-delay:.06s}
+    .tarea-fila:nth-child(3){animation-delay:.1s} .tarea-fila:nth-child(4){animation-delay:.14s}
+    .tarea-fila:nth-child(5){animation-delay:.18s}
+  }
 
   .info { flex: 1; min-width: 0; }
-  .cod { font-size: .68rem; font-family: monospace; color: var(--gray); font-weight: 700; margin-bottom: .12rem; }
-  .titulo { font-size: .98rem; font-weight: 700; color: var(--navy); margin-bottom: .25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .desc { font-size: .8rem; color: #64748b; margin-bottom: .45rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .plazo { font-size: .76rem; font-weight: 600; }
-  .plazo.ok    { color: var(--green); }
-  .plazo.soon  { color: var(--amber); }
-  .plazo.venc  { color: var(--red);   }
+  .cod { font-family: 'IBM Plex Mono', monospace; font-size: .68rem; color: var(--slate); font-weight: 600; margin-bottom: .15rem; }
+  .titulo { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: .3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .desc { font-size: .82rem; color: var(--slate); margin-bottom: .5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .plazo { font-size: .78rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+  .plazo svg { width: 13px; height: 13px; stroke-linecap: round; stroke-linejoin: round; }
+  .plazo.ok    { color: var(--slate); }
+  .plazo.soon  { color: var(--brass); }
+  .plazo.venc  { color: var(--rust); }
 
-  .accion { flex-shrink: 0; min-width: 110px; text-align: right; }
+  .accion { flex-shrink: 0; min-width: 118px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; }
 
-  .vacio { text-align: center; padding: 3.5rem 0; color: var(--gray); }
-  .vacio .ico { font-size: 2.8rem; margin-bottom: .6rem; }
+  .vacio { text-align: center; padding: 3.5rem 0; color: var(--slate); }
+  .vacio .seal { margin: 0 auto .9rem; }
 </style>
 {% endblock %}
 
 {% block body %}
-{# ── Estadísticas ── #}
 {% set total      = tareas | length %}
 {% set entregadas = tareas | selectattr('entrega_id') | list | length %}
 {% set pendientes = tareas | rejectattr('entrega_id') | selectattr('fecha_limite','gt',ahora) | list | length %}
 
 <div class="resumen">
-  <div class="res-card"><span class="icon">📋</span><div><div class="lbl">Total</div><div class="val">{{ total }}</div></div></div>
-  <div class="res-card"><span class="icon">✅</span><div><div class="lbl">Entregadas</div><div class="val" style="color:var(--green)">{{ entregadas }}</div></div></div>
-  <div class="res-card"><span class="icon">⏳</span><div><div class="lbl">Pendientes</div><div class="val" style="color:var(--blue)">{{ pendientes }}</div></div></div>
+  <div class="res-card">
+    <span class="seal slate"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></span>
+    <div><div class="lbl">Total</div><div class="val">{{ total }}</div></div>
+  </div>
+  <div class="res-card">
+    <span class="seal forest"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+    <div><div class="lbl">Entregadas</div><div class="val" style="color:var(--forest)">{{ entregadas }}</div></div>
+  </div>
+  <div class="res-card">
+    <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+    <div><div class="lbl">Pendientes</div><div class="val">{{ pendientes }}</div></div>
+  </div>
 </div>
 
 <div class="ph">
@@ -55,7 +71,10 @@
 </div>
 
 {% if not tareas %}
-  <div class="card vacio"><div class="ico">📭</div><p>No hay tareas registradas.</p></div>
+  <div class="card vacio">
+    <span class="seal lg slate" style="display:flex"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8 5 8-5M4 8v10h16V8M4 8l8-5 8 5"/></svg></span>
+    <p>No hay tareas registradas.</p>
+  </div>
 {% endif %}
 
 {% for t in tareas %}
@@ -70,20 +89,23 @@
       <div class="desc">{{ t.descripcion }}</div>
       <div class="plazo {% if vencida %}venc{% elif segs<3600 %}soon{% else %}ok{% endif %}">
         {% if vencida %}
-          ⏰ Venció el {{ t.fecha_limite.strftime('%d/%m/%Y %H:%M') }}
+        <span class="badge"><span class="seal rust" style="width:17px;height:17px"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>Vencida</span>
+          Venció el {{ t.fecha_limite.strftime('%d/%m/%Y %H:%M') }}
         {% elif segs < 3600 %}
-          ⚡ ¡Menos de 1 hora! · {{ t.fecha_limite.strftime('%d/%m/%Y %H:%M') }}
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+          Menos de 1 hora · cierra {{ t.fecha_limite.strftime('%H:%M') }}
         {% else %}
-          📅 Hasta el {{ t.fecha_limite.strftime('%d/%m/%Y %H:%M') }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Hasta el {{ t.fecha_limite.strftime('%d/%m/%Y %H:%M') }}
         {% endif %}
       </div>
     </div>
     <div class="accion">
       {% if entregada %}
-        <span class="badge badge-green">✓ Entregada</span><br><br>
-        <a href="{{ url_for('entregar', tarea_id=t.id) }}" class="btn btn-ghost" style="font-size:.75rem;padding:.3rem .7rem">Ver</a>
+        <span class="badge"><span class="seal forest" style="width:22px;height:22px"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>Entregada</span>
+        <a href="{{ url_for('entregar', tarea_id=t.id) }}" class="btn btn-ghost" style="font-size:.75rem;padding:.35rem .75rem">Ver</a>
       {% elif vencida %}
-        <span class="badge badge-red">✗ Vencida</span>
+        <span class="badge"><span class="seal rust" style="width:22px;height:22px"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>Vencida</span>
       {% else %}
         <a href="{{ url_for('entregar', tarea_id=t.id) }}" class="btn btn-primary">Entregar &rarr;</a>
       {% endif %}

@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS entregas (
     UNIQUE KEY uk_entrega (tarea_id, estudiante_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ── Datos de prueba ──────────────────────────────────────────
+-- ── Datos de prueba ──────────────────────
 INSERT IGNORE INTO estudiantes (cedula, nombre, password) VALUES
 ('1700000001', 'Ana García',       'pass123'),
 ('1700000002', 'Luis Pérez',       'pass123'),
