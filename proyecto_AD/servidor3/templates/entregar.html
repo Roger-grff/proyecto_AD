@@ -3,61 +3,72 @@
 
 {% block css %}
 <style>
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 2rem; margin-bottom: 1.2rem; }
-  .meta .lbl { font-size: .7rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .18rem; }
-  .meta .val { font-size: .9rem; font-weight: 600; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 2rem; margin-bottom: 1.3rem; }
+  .meta .lbl { font-size: .7rem; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .2rem; }
+  .meta .val { font-size: .92rem; font-weight: 600; }
 
-  .desc-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--blue); border-radius: 8px; padding: .9rem 1rem; font-size: .86rem; color: #64748b; line-height: 1.65; margin-bottom: 1.3rem; }
+  .desc-box { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--ink); border-radius: 8px; padding: .95rem 1.1rem; font-size: .86rem; color: var(--slate); line-height: 1.65; margin-bottom: 1.3rem; }
 
-  .banner { display: flex; align-items: center; gap: .6rem; padding: .8rem 1rem; border-radius: 8px; font-size: .86rem; font-weight: 600; margin-bottom: 1.2rem; }
-  .banner.ok   { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
-  .banner.soon { background: #fffbeb; color: var(--amber); border: 1px solid #fde68a; }
-  .banner.past { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+  .banner { display: flex; align-items: center; gap: .65rem; padding: .8rem 1rem; border-radius: 8px; font-size: .86rem; font-weight: 600; margin-bottom: 1.3rem; border: 1px solid var(--line); }
+  .banner.ok   { color: var(--ink); }
+  .banner.soon { color: var(--brass); border-color: rgba(160,106,44,.3); }
+  .banner.past { color: var(--rust); border-color: rgba(156,68,51,.3); }
 
-  .resp-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--green); border-radius: 8px; padding: .9rem 1rem; font-size: .88rem; color: #166534; white-space: pre-wrap; line-height: 1.6; margin-bottom: .5rem; }
-  .fecha-env { font-size: .73rem; color: var(--gray); }
+  .resp-box { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--forest); border-radius: 8px; padding: .95rem 1.1rem; font-size: .88rem; color: var(--ink); white-space: pre-wrap; line-height: 1.6; margin-bottom: .6rem; }
+  .fecha-env { font-size: .74rem; color: var(--slate); display: flex; align-items: center; gap: .4rem; }
+  .fecha-env svg { width: 12px; height: 12px; }
 
-  .acciones { display: flex; gap: .7rem; margin-top: .3rem; }
-  .sec-label { font-size: .7rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .4rem; }
+  .acciones { display: flex; gap: .7rem; margin-top: .4rem; }
+  .sec-label { font-size: .7rem; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .45rem; }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="ph">
-  <h1>{% if entrega %}📄 Detalle de entrega{% else %}✏️ Entregar tarea{% endif %}</h1>
-  <a href="{{ url_for('tareas') }}" class="btn btn-ghost">&larr; Volver</a>
+  <h1>{% if entrega %}Detalle de entrega{% else %}Entregar tarea{% endif %}</h1>
+  <a href="{{ url_for('tareas') }}" class="btn btn-ghost">Volver</a>
 </div>
 
 <div class="card">
-  {# Metadatos #}
   <div class="meta">
-    <div><div class="lbl">Código</div><div class="val" style="font-family:monospace;color:#64748b">{{ tarea.codigo }}</div></div>
+    <div><div class="lbl">Código</div><div class="val mono" style="color:var(--slate)">{{ tarea.codigo }}</div></div>
     <div><div class="lbl">Título</div><div class="val">{{ tarea.titulo }}</div></div>
   </div>
 
   <div class="sec-label">Descripción</div>
   <div class="desc-box">{{ tarea.descripcion }}</div>
 
-  {# Banner fecha #}
   {% set vencida = ahora > tarea.fecha_limite %}
   {% set segs    = (tarea.fecha_limite - ahora).total_seconds() %}
   <div class="banner {% if vencida %}past{% elif segs<3600 %}soon{% else %}ok{% endif %}">
+    <span class="seal {% if vencida %}rust{% elif segs<3600 %}brass{% else %}slate{% endif %}" style="width:24px;height:24px">
+      {% if vencida %}
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+      {% elif segs < 3600 %}
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+      {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      {% endif %}
+    </span>
     {% if vencida %}
-      ⛔ Venció el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
+      Venció el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
     {% elif segs < 3600 %}
-      ⚡ ¡Menos de 1 hora! · Cierra el {{ tarea.fecha_limite.strftime('%H:%M') }}
+      Menos de 1 hora · cierra a las {{ tarea.fecha_limite.strftime('%H:%M') }}
     {% else %}
-      ✅ Abierta hasta el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
+      Abierta hasta el {{ tarea.fecha_limite.strftime('%d/%m/%Y a las %H:%M') }}
     {% endif %}
   </div>
 
   {% if entrega %}
     <div class="sec-label">Tu respuesta</div>
     <div class="resp-box">{{ entrega.respuesta }}</div>
-    <div class="fecha-env">Enviada el {{ entrega.fecha_entrega.strftime('%d/%m/%Y a las %H:%M:%S') }}</div>
+    <div class="fecha-env">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5L20 6"/></svg>
+      Enviada el {{ entrega.fecha_entrega.strftime('%d/%m/%Y a las %H:%M:%S') }}
+    </div>
 
   {% elif vencida %}
-    <p style="text-align:center;color:var(--gray);padding:.8rem 0;font-size:.88rem">Esta tarea venció sin entrega.</p>
+    <p style="text-align:center;color:var(--slate);padding:.8rem 0;font-size:.88rem">Esta tarea venció sin entrega.</p>
 
   {% else %}
     <form method="POST">
@@ -66,7 +77,7 @@
         <textarea name="respuesta" class="input" placeholder="Escribe aquí tu respuesta..." required></textarea>
       </div>
       <div class="acciones">
-        <button type="submit" class="btn btn-success">Enviar entrega ✓</button>
+        <button type="submit" class="btn btn-success">Enviar</button>
         <a href="{{ url_for('tareas') }}" class="btn btn-ghost">Cancelar</a>
       </div>
     </form>
