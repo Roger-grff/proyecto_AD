@@ -255,7 +255,7 @@ docker compose down -v
 ## Autor
 
 **Andre chang**
-**Nayely Ayol**
-**Roger Grefa**
+**- Nayely Ayol**
+**- Roger Grefa**
 
 Proyecto desarrollado con fines académicos para implementar una arquitectura distribuida basada en contenedores Docker y evaluar su desempeño mediante pruebas de carga con k6.
