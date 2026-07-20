@@ -61,6 +61,8 @@ services:
       - "5001:5000"
     depends_on:
       - mysql_principal
+    cpus: "2.0"
+    mem_limit: 1024m
 
   # ── Servidor Web 2 ─────────────────────────────────────────
   servidor2:
@@ -72,6 +74,8 @@ services:
       - "5002:5000"
     depends_on:
       - mysql_principal
+    cpus: "1.5"
+    mem_limit: 768m
 
   # ── Servidor Web 3 ─────────────────────────────────────────
   servidor3:
@@ -83,6 +87,8 @@ services:
       - "5003:5000"
     depends_on:
       - mysql_principal
+    cpus: "1.0"
+    mem_limit: 512m
 
   # ── Balanceador de carga NGINX ─────────────────────────────
   nginx:
