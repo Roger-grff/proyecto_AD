@@ -1,4 +1,4 @@
-# Sistema Web Distribuido con Docker, Flask, Nginx y MySQL
+<h1 align='center'> Sistema Web Distribuido con Docker, Flask, Nginx y MySQL</h1>
 
 ## Descripción
 
@@ -10,27 +10,8 @@ La arquitectura permite distribuir las solicitudes de los clientes entre varios 
 
 ## Arquitectura del Proyecto
 
-```
-                    Usuario
-                       │
-                       ▼
-              +-----------------+
-              |      Nginx      |
-              | Balanceador     |
-              +-----------------+
-                 │     │     │
-        ┌────────┘     │     └────────┐
-        ▼              ▼              ▼
-+---------------+ +---------------+ +---------------+
-|  Servidor 1   | |  Servidor 2   | |  Servidor 3   |
-|     Flask     | |     Flask     | |     Flask     |
-+---------------+ +---------------+ +---------------+
-                 │
-                 ▼
-          +--------------+
-          |    MySQL     |
-          +--------------+
-```
+<img width="544" height="583" alt="image" src="https://github.com/user-attachments/assets/8ec46d34-514f-4a0e-b268-0133f605317f" />
+
 
 ---
 
@@ -52,29 +33,54 @@ La arquitectura permite distribuir las solicitudes de los clientes entre varios 
 ## Estructura del Proyecto
 
 ```
-proyecto/
+proyecto_AD/
 │
 ├── docker-compose.yml
+├── README.md
+│
 ├── nginx/
+│   ├── Dockerfile
 │   └── nginx.conf
 │
 ├── servidor1/
 │   ├── app.py
-│   └── Dockerfile
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── templates/
+│       ├── base.html
+│       ├── entregar.html
+│       ├── login.html
+│       ├── mis_entregas.html
+│       └── tareas.html
 │
 ├── servidor2/
 │   ├── app.py
-│   └── Dockerfile
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── templates/
+│       ├── base.html
+│       ├── entregar.html
+│       ├── login.html
+│       ├── mis_entregas.html
+│       └── tareas.html
 │
 ├── servidor3/
 │   ├── app.py
-│   └── Dockerfile
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── templates/
+│       ├── base.html
+│       ├── entregar.html
+│       ├── login.html
+│       ├── mis_entregas.html
+│       └── tareas.html
 │
 ├── db/
-│   └── init.sql
+│   ├── init.sql
+│   └── init-slave.sh
 │
 └── tests/
-    └── load_test.js
+    └── test.js
 ```
 
 ---
@@ -183,13 +189,29 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-    vus: 500,
-    duration: '3m',
+    scenarios: {
+        usuarios_100: {
+            executor: 'constant-vus',
+            vus: 100,
+            duration: '3m',
+        },
+        usuarios_300: {
+            executor: 'constant-vus',
+            vus: 300,
+            duration: '3m',
+            startTime: '3m', 
+        },
+        usuarios_500: {
+            executor: 'constant-vus',
+            vus: 500,
+            duration: '3m',
+            startTime: '6m', 
+        },
+    },
 };
 
 export default function () {
-
-    let res = http.get('http://host.docker.internal:8080/');
+    const res = http.get('http://host.docker.internal:8080/');
 
     check(res, {
         'status es 200': (r) => r.status === 200,
@@ -197,6 +219,8 @@ export default function () {
 
     sleep(1);
 }
+//docker run --rm -i -v "${PWD}:/scripts" grafana/k6 run /scripts/test.js
+//docker stats
 ```
 
 ---
@@ -252,10 +276,10 @@ docker compose down -v
 
 ---
 
-## Autor
+## Autores
 
-**Andre chang**
-**- Nayely Ayol**
-**- Roger Grefa**
+- **Andre chang**
+- **Nayely Ayol**
+- **Roger Grefa**
 
 Proyecto desarrollado con fines académicos para implementar una arquitectura distribuida basada en contenedores Docker y evaluar su desempeño mediante pruebas de carga con k6.
