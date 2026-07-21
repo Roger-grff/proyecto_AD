@@ -1,9 +1,11 @@
-FROM python:latest
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-RUN pip install flask
-RUN pip install mysql-connector-python
 
 EXPOSE 5000
 
