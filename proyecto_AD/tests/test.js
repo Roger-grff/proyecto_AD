@@ -16,3 +16,5 @@ export default function () {
 
     sleep(1);
 }
+
+//docker run --rm -i -v "${PWD}:/scripts" grafana/k6 run /scripts/test.js
