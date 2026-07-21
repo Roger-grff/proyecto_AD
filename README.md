@@ -153,6 +153,17 @@ http://localhost:8080
 
 ---
 
+## Interfaz
+
+| Pantalla | Vista previa |
+|---|---|
+| Login | <img width="450" height="500" alt="image" src="https://github.com/user-attachments/assets/871842bc-6592-4805-aa52-df62cd820797" />|
+| Lista de tareas | <img width="450" height="400" alt="image" src="https://github.com/user-attachments/assets/e18bc032-6990-496f-a0ad-c02879caaa91" />|
+| Entrega de tarea | <img width="450" height="400" alt="image" src="https://github.com/user-attachments/assets/218d4487-4a46-4132-b30b-475fe60bfa61" />|
+| Mis entregas | <img width="450" height="400" alt="image" src="https://github.com/user-attachments/assets/9e88a0f9-5e48-49af-a063-3ec8315e3e26" />|
+
+---
+
 ## Balanceo de Carga
 
 Nginx distribuye automáticamente las solicitudes entrantes entre los tres servidores Flask utilizando el algoritmo Round Robin.
