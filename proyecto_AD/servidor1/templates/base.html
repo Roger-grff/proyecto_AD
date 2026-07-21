@@ -15,7 +15,7 @@
       --paper:    #eef1ec;
       --surface:  #ffffff;
       --brass:    #a06a2c;
-      --forest:   #3f6a54;
+      --forest:   #72ee53;
       --rust:     #9c4433;
       --line:     #dadfd7;
       --slate:    #6b7280;
@@ -106,18 +106,61 @@
       box-shadow: 0 1px 2px rgba(24,34,51,.04);
     }
 
-    /* Alertas */
-    .alerta {
-      display: flex; align-items: center; gap: .7rem; padding: .75rem 1rem;
-      border-radius: 8px; font-size: .87rem; margin-bottom: .9rem;
-      background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--slate);
+    /* Mensajes flotantes */
+    .toast-stack {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.2rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      max-width: 340px;
+      width: calc(100% - 2.4rem);
+      pointer-events: none;
     }
-    .alerta-success { border-left-color: var(--forest); }
-    .alerta-success .seal { --c: var(--forest); }
-    .alerta-danger  { border-left-color: var(--rust); }
-    .alerta-danger .seal { --c: var(--rust); }
-    .alerta-warning { border-left-color: var(--brass); }
-    .alerta-warning .seal { --c: var(--brass); }
+    .toast {
+      pointer-events: auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--slate);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(24,34,51,.14);
+      padding: .8rem 1rem;
+      font-size: .82rem;
+      color: var(--ink);
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      opacity: 0;
+      transform: translateX(16px);
+      animation: toast-in .25s ease forwards;
+    }
+    .toast.alerta-success { border-left-color: var(--forest); }
+    .toast.alerta-success .seal { --c: var(--forest); }
+    .toast.alerta-danger  { border-left-color: var(--rust); }
+    .toast.alerta-danger .seal { --c: var(--rust); }
+    .toast.alerta-warning { border-left-color: var(--brass); }
+    .toast.alerta-warning .seal { --c: var(--brass); }
+    .toast.leaving { animation: toast-out .2s ease forwards; }
+    .toast .toast-text { flex: 1; }
+    .toast .toast-close {
+      background: none; border: none; cursor: pointer; color: var(--slate);
+      padding: 0; line-height: 1; font-size: 1rem; flex-shrink: 0;
+    }
+    .toast .toast-close:hover { color: var(--ink); }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toast-out {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(16px); }
+    }
+    @media (max-width: 480px) {
+      .toast-stack { left: 1.2rem; right: 1.2rem; max-width: none; top: .8rem; }
+    }
 
     /* Botones */
     .btn {
@@ -168,6 +211,27 @@
 </head>
 <body>
 
+<!-- Mensajes flotantes -->
+<div class="toast-stack" id="toastStack">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+      <div class="toast alerta-{{ cat }}">
+        <span class="seal" style="width:22px;height:22px">
+          {% if cat=='success' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg>
+          {% elif cat=='danger' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          {% else %}
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          {% endif %}
+        </span>
+        <span class="toast-text">{{ msg }}</span>
+        <button type="button" class="toast-close" aria-label="Cerrar">&times;</button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
 {% if session.estudiante_id %}
 <nav>
   <div class="nav-brand">
@@ -188,25 +252,26 @@
 {% endif %}
 
 <div class="wrap">
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% for cat, msg in msgs %}
-      <div class="alerta alerta-{{ cat }}">
-        <span class="seal">
-          {% if cat=='success' %}
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg>
-          {% elif cat=='danger' %}
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
-          {% else %}
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="9"/></svg>
-          {% endif %}
-        </span>
-        {{ msg }}
-      </div>
-    {% endfor %}
-  {% endwith %}
   {% block body %}{% endblock %}
 </div>
 
 <footer>ESCUELA POLITÉCNICA NACIONAL &nbsp;·&nbsp; APLICACIONES DISTRIBUIDAS 2026-A</footer>
+
+<script>
+  (function () {
+    function dismissToast(toast) {
+      if (!toast || toast.classList.contains('leaving')) return;
+      toast.classList.add('leaving');
+      toast.addEventListener('animationend', function () {
+        toast.remove();
+      }, { once: true });
+    }
+    document.querySelectorAll('.toast').forEach(function (toast) {
+      var closeBtn = toast.querySelector('.toast-close');
+      if (closeBtn) closeBtn.addEventListener('click', function () { dismissToast(toast); });
+      setTimeout(function () { dismissToast(toast); }, 5000);
+    });
+  })();
+</script>
 </body>
 </html>
