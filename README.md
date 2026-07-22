@@ -153,7 +153,7 @@ http://localhost:8080
 
 ---
 
-## Interfaz
+## Interfaz del proyecto
 
 | Pantalla | Vista previa |
 |---|---|
